@@ -1,7 +1,6 @@
 import socket
 import threading
 import select
-import time
 
 # 設定菜單
 menu = {
@@ -46,6 +45,7 @@ def handle_client(client_socket):
 
 # UDP廣播伺服器
 def udp_broadcast():
+    import time
     server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
     server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2)
@@ -69,12 +69,13 @@ def calculate_totals():
     total_costs = {}
     
     for order in orders:
-        food, drink = order[0], order[1]
+        name, order_items = order.split(": ")
+        food, drink = order_items[0], order_items[1]
         food_name, food_price = menu[food]
         drink_name, drink_price = drinks[drink]
         item_counts[(food_name, food_price)] += 1
         drink_counts[(drink_name, drink_price)] += 1
-        total_costs[order] = food_price + drink_price
+        total_costs[name] = food_price + drink_price
 
     print("\n訂單統計:")
     for (item, price), count in item_counts.items():
@@ -84,8 +85,8 @@ def calculate_totals():
         if count > 0:
             print(f"{item} {price}元 x {count}份")
     print("\n每人需付金額:")
-    for order, cost in total_costs.items():
-        print(f"{order}: {cost}元")
+    for name, cost in total_costs.items():
+        print(f"{name}: {cost}元")
 
 if __name__ == "__main__":
     threading.Thread(target=tcp_server).start()
