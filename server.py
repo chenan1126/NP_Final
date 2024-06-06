@@ -3,7 +3,6 @@ import threading
 import pandas as pd
 import tkinter as tk
 from tkinter import scrolledtext, messagebox, filedialog
-import json
 import time
 from datetime import datetime
 
@@ -30,10 +29,6 @@ menu, drinks = load_menu()
 orders = []
 order_history = []
 
-def save_order_history():
-    with open('order_history.json', 'w', encoding='utf-8') as f:
-        json.dump(order_history, f, ensure_ascii=False, indent=4)
-
 # TCP服务器
 def tcp_server():
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -57,7 +52,6 @@ def handle_client(client_socket):
                 'timestamp': datetime.now().isoformat(),
                 'order': data
             })
-            save_order_history()
             print(f"收到訂單: {data}")
             update_order_display()
         except Exception as e:
